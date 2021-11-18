@@ -1,0 +1,4 @@
+2021-09-28 16:17:45 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "PRODUCT" не найдена
+Table "PRODUCT" not found; SQL statement:
+select product0_.id as id1_0_, product0_.name as name2_0_, product0_.price as price3_0_ from product product0_ [42102-200]

@@ -1,0 +1,94 @@
+version: '3.7'
+
+services:
+  storage-service:
+    image: ksonv/storage-service:0.0.1-SNAPSHOT
+    ports: 
+      - "8201:8201"
+    depends_on:
+      - naming-service
+      - config-service
+      - rabbitmq
+    environment:
+      EUREKA_URL: http://test:test@naming-service:8301/eureka
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411/
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+      SPRING_CLOUD_CONFIG_URI: http://config-service:8888/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: 'true'
+
+  basket-service:
+    image: ksonv/basket-service:0.0.1-SNAPSHOT
+    ports: 
+      - "8401:8401"
+    depends_on:
+      - naming-service
+      - rabbitmq
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://test:test@naming-service:8301/eureka
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411/
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+
+  listener-service:
+    image: ksonv/listener-service:0.0.1-SNAPSHOT
+    ports: 
+      - "8101:8101"
+    depends_on:
+      - naming-service
+      - rabbitmq
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://test:test@naming-service:8301/eureka
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411/
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+
+  gateway-service:
+    image: ksonv/gateway-service:0.0.1-SNAPSHOT
+    ports: 
+      - "8501:8501"
+    depends_on:
+      - naming-service
+      - rabbitmq
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://test:test@naming-service:8301/eureka
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411/
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+
+  config-service:
+    image: ksonv/config-service:0.0.1-SNAPSHOT
+    ports: 
+      - "8888:8888"
+    depends_on:
+      - naming-service
+      - rabbitmq
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-service:8301/eureka
+
+  naming-service:
+    image: ksonv/naming-service:0.0.1-SNAPSHOT
+    ports: 
+      - "8301:8301"
+
+  zipkin-service:
+    image: openzipkin/zipkin:2.23
+    ports: 
+      - "9411:9411"
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+
+  rabbitmq:
+    image: rabbitmq:3.8.12-management
+    ports: 
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/logs:/var/log/rabbitmq/log
+

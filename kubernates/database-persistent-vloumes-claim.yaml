@@ -1,0 +1,14 @@
+apiVersion: 1
+kind: PersistentVolumeClaim # Выделяет память для своих нужд
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce # режим
+  resources:
+    requests:
+      storage: 2Gi
+
+# ReadWriteOnce - Может использоваться только одним подом
+# ReadOnlyMany  - Несколько нод могут читать данные
+# ReadWriteMany - Несколько нод могут читать и записывать данные

@@ -1,0 +1,71 @@
+http://localhost:8201/product              - Storage            8201
+http://localhost:8401/basket/1             - Basket             8401
+http://localhost:9411/zipkin               - Zipkin             9411
+http://localhost:8501/basket/1             - Gateway            8501
+http://localhost:8501/product              - Gateway            8501
+http://localhost:8301/                     - Eureka             8301
+http://localhost:15672/#/                  - RabbitMQ (guest)   15672
+http://localhost:8101/                     - Kotlin Listener    8101
+http://localhost:8101/history              - Listener           8101
+http://localhost:8601/storage-service/dev  - Config             8888
+
+zuul?
+
+mvn package -DskipTests
+
+kubectl get svc - services
+kubectl get po  - pods
+kubectl get rs  - replicaSets
+
+docker container rm ... -f                                            - Удаление контейнера
+docker-compose up -d                                                  - Запустить докер compose
+docker rm -f $(docker ps -a -q)                                       - Удалить все контэйнеры
+docker exec -it <container-id> /bin/bash                              - Зайти в bash контэйнера
+docker cp <containerId>:/file/path/within/container /host/path/target - Копирование из докера
+docker container stop $(docker container ls -aq)                      - Остановить все контэйнеры
+
+
+Storage:
+docker build -t ksonv/storage-service:0.0.1-SNAPSHOT .
+docker run -d -p 8201:8201 ksonv/storage-service:0.0.1-SNAPSHOT
+
+docker tag ksonv/storage-service:0.0.1-SNAPSHOT ksonv/storage-service:0.0.1-SNAPSHOT - Нужна ли?
+docker push ksonv/storage-service:0.0.1-SNAPSHOT
+
+
+Naming:
+docker build -t ksonv/naming-service:0.0.1-SNAPSHOT .
+docker run -d -p 8301:8301 ksonv/naming-service:0.0.1-SNAPSHOT
+
+docker tag ksonv/naming-service:0.0.1-SNAPSHOT ksonv/naming-service:0.0.1-SNAPSHOT
+docker push ksonv/naming-service:0.0.1-SNAPSHOT
+
+
+Basket:
+docker build -t ksonv/basket-service:0.0.1-SNAPSHOT .
+docker run -d -p 8401:8401 ksonv/basket-service:0.0.1-SNAPSHOT
+
+docker tag ksonv/basket-service:0.0.1-SNAPSHOT ksonv/basket-service:0.0.1-SNAPSHOT
+docker push ksonv/basket-service:0.0.1-SNAPSHOT
+
+
+Gateway:
+docker build -t ksonv/gateway-service:0.0.1-SNAPSHOT .
+docker run -d -p 8501:8501 ksonv/gateway-service:0.0.1-SNAPSHOT
+
+docker tag ksonv/gateway-service:0.0.1-SNAPSHOT ksonv/gateway-service:0.0.1-SNAPSHOT
+docker push ksonv/gateway-service:0.0.1-SNAPSHOT
+
+Config:
+docker build -t ksonv/config-service:0.0.1-SNAPSHOT .
+docker run -d -p 8888:8888 ksonv/config-service:0.0.1-SNAPSHOT
+
+docker tag ksonv/config-service:0.0.1-SNAPSHOT ksonv/config-service:0.0.1-SNAPSHOT
+docker push ksonv/config-service:0.0.1-SNAPSHOT
+
+Listener:
+docker build -t ksonv/listener-service:0.0.1-SNAPSHOT .
+docker run -d -p 8101:8101 ksonv/listener-service:0.0.1-SNAPSHOT
+
+docker tag ksonv/listener-service:0.0.1-SNAPSHOT ksonv/listener-service:0.0.1-SNAPSHOT
+docker push ksonv/listener-service:0.0.1-SNAPSHOT

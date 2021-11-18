@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS history;
+
+CREATE TABLE history (
+  id int8 AUTO_INCREMENT PRIMARY KEY,
+  message VARCHAR(250) NOT NULL,
+  created TIMESTAMP
+);

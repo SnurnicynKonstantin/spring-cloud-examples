@@ -1,0 +1,56 @@
+Инструкция по сборке контейнера - https://dev.to/arvindkgs/running-springboot-app-on-kubernetes-with-private-repository-4cpp
+Пуш в удаленный репозиторий - https://docs.hazelcast.org/docs/openshift/deployment-guide/Building_and_Deploying_to_Private_Docker_Registry.html
+
+http://localhost:8201/product  - Storage
+http://localhost:9411/zipkin   - Zipkin   
+http://localhost:8501/basket/1 - Gateway
+http://localhost:8501/product  - Gateway
+http://localhost:8301/         - Eureka
+
+mvn package
+
+kubectl get svc - services
+kubectl get po  - pods
+kubectl get rs  - replicaSets
+
+Storage:
+docker build -t storage-service:0.0.1-SNAPSHOT .
+docker run -d -p 8201:8201 storage-service:0.0.1-SNAPSHOT
+docker run -d -p 8201:8201 registry.xrm.ru/skv/storage-service:0.0.1-SNAPSHOT
+
+docker login -u skv -p aa348169AA registry.xrm.ru
+docker tag storage-service:0.0.1-SNAPSHOT registry.xrm.ru/skv/storage-service:0.0.1-SNAPSHOT
+docker push registry.xrm.ru/skv/storage-service:0.0.1-SNAPSHOT
+
+kubectl create deployment storage-service --image=registry.xrm.ru/skv/storage-service:0.0.11-SNAPSHOT -n skv  
+kubectl expose deployment storage-service --type=LoadBalancer --port=8201 -n skv   
+
+
+Naming:
+docker build -t naming-service:0.0.1-SNAPSHOT .
+docker run -d -p 8301:8301 naming-service:0.0.1-SNAPSHOT
+docker run -d -p 8301:8301 registry.xrm.ru/skv/naming-service:0.0.1-SNAPSHOT
+
+docker login -u skv -p aa348169AA registry.xrm.ru
+docker tag naming-service:0.0.1-SNAPSHOT registry.xrm.ru/skv/naming-service:0.0.1-SNAPSHOT
+docker push registry.xrm.ru/skv/naming-service:0.0.1-SNAPSHOT
+
+
+Basket:
+docker build -t basket-service:0.0.1-SNAPSHOT .
+docker run -d -p 8401:8401 basket-service:0.0.1-SNAPSHOT
+docker run -d -p 8401:8401 registry.xrm.ru/skv/basket-service:0.0.1-SNAPSHOT
+
+docker login -u skv -p aa348169AA registry.xrm.ru
+docker tag basket-service:0.0.1-SNAPSHOT registry.xrm.ru/skv/basket-service:0.0.1-SNAPSHOT
+docker push registry.xrm.ru/skv/basket-service:0.0.1-SNAPSHOT
+
+
+Gateway:
+docker build -t gateway-service:0.0.1-SNAPSHOT .
+docker run -d -p 8501:8501 gateway-service:0.0.1-SNAPSHOT
+docker run -d -p 8501:8501 registry.xrm.ru/skv/gateway-service:0.0.1-SNAPSHOT
+
+docker login -u skv -p aa348169AA registry.xrm.ru
+docker tag gateway-service:0.0.1-SNAPSHOT registry.xrm.ru/skv/gateway-service:0.0.1-SNAPSHOT
+docker push registry.xrm.ru/skv/gateway-service:0.0.1-SNAPSHOT

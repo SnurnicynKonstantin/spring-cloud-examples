@@ -1,0 +1,17 @@
+kubectl apply -f <filename>
+kubectl delete -f <filename>
+kubectl get pods
+            services
+            pvc - persistent volume claim
+            pv - persistent volume
+kubectl describe <object type> <object name>
+
+minikube start
+minikube status
+minikube stop
+minikube delete    - Очистить локальное состояние
+minikube ip        - Узнать ip кубера
+minikube dashboard - Админка кубера
+
+kubectl set image deployment/client-deployment client=stephengrider/multi-client:v5
+kubectl create secret <type> <secret_name> --from-literal key-value

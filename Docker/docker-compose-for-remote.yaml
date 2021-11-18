@@ -1,0 +1,85 @@
+version: '3.7'
+
+services:
+  storage-service:
+    image: registry.xrm.ru/skv/storage-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports: 
+      - "8201:8201"
+    networks:
+      - shop-network
+    depends_on:
+      - naming-service
+      - rabbitmq
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-service:8301/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+
+  basket-service:
+    image: registry.xrm.ru/skv/basket-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports: 
+      - "8401:8401"
+    networks:
+      - shop-network
+    depends_on:
+      - naming-service
+      - rabbitmq
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-service:8301/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+
+  gateway-service:
+    image: registry.xrm.ru/skv/gateway-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports: 
+      - "8501:8501"
+    networks:
+      - shop-network
+    depends_on:
+      - naming-service
+      - rabbitmq
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-service:8301/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+
+  naming-service:
+    image: registry.xrm.ru/skv/naming-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports: 
+      - "8301:8301"
+    networks:
+      - shop-network
+
+  zipkin-service:
+    image: openzipkin/zipkin:2.23
+    mem_limit: 300m
+    ports: 
+      - "9411:9411"
+    networks:
+      - shop-network
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+
+  rabbitmq:
+    image: rabbitmq:3.8.12-management
+    mem_limit: 300m
+    ports: 
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - shop-network
+
+networks:
+  shop-network:
